@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ИЗМЕНИТЬ: название и описание сервера для поисковиков -->
+  <title>CraftLand — Minecraft-сервер</title>
+  <meta name="description" content="CraftLand — Minecraft-сервер: Выживание, Анархия, SkyBlock, Mini-Games. Заходи на play.craftland.ru!">
+
+  <!-- Шрифты Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Иконки Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    /* ============ ПЕРЕМЕННЫЕ (цвета можно менять здесь) ============ */
+    :root {
+      --bg: #0f172a;
+      --green-dark: #1a3a1a;
+      --green: #2d5a2d;
+      --accent: #4ade80;
+      --accent-2: #22c55e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --card: #14221b;
+      --shadow: #0a1f0a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, .pixel { font-family: 'Press Start 2P', monospace; line-height: 1.4; }
+
+    .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 90px 0; position: relative; }
+
+    .section-title {
+      text-align: center;
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 14px;
+      text-shadow: 4px 4px 0 var(--shadow);
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 50px;
+    }
+
+    /* ============ КНОПКИ В БЛОЧНОМ СТИЛЕ ============ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      padding: 16px 24px;
+      border: 4px solid #052e16;
+      background: var(--accent-2);
+      color: #052e16;
+      cursor: pointer;
+      box-shadow: 6px 6px 0 #052e16; /* резкая тень без размытия */
+      transition: transform .1s, box-shadow .1s, background .2s;
+    }
+    .btn:hover { background: var(--accent); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 #052e16; }
+    .btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 #052e16; }
+    .btn-discord { background: #5865f2; color: #fff; border-color: #1e2255; box-shadow: 6px 6px 0 #1e2255; }
+    .btn-discord:hover { background: #7983f5; box-shadow: 8px 8px 0 #1e2255; }
+    .btn-discord:active { box-shadow: 2px 2px 0 #1e2255; }
+
+    /* ============ HERO ============ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 0;
+      background: linear-gradient(180deg, #0b1220 0%, var(--green-dark) 70%, var(--green) 100%);
+      overflow: hidden;
+    }
+    #bg-layer { position: absolute; inset: 0; pointer-events: none; }
+    .star {
+      position: absolute;
+      background: #fff;
+      opacity: .7;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+    .block {
+      position: absolute;
+      border: 3px solid rgba(0,0,0,.35);
+      animation: float 8s infinite ease-in-out;
+      opacity: .55;
+    }
+    @keyframes twinkle { 0%,100% { opacity: .2; } 50% { opacity: .9; } }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-26px) rotate(8deg); } }
+
+    .hero-content { position: relative; z-index: 2; }
+    .hero h1 {
+      font-size: clamp(1.8rem, 6vw, 4rem);
+      color: var(--accent);
+      text-shadow: 6px 6px 0 #052e16;
+      margin-bottom: 24px;
+    }
+    .hero .subtitle {
+      max-width: 640px;
+      margin: 0 auto 36px;
+      color: var(--text);
+      font-size: 1.1rem;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(74, 222, 128, .12);
+      border: 2px solid var(--accent-2);
+      color: var(--accent);
+      padding: 6px 14px;
+      font-size: .9rem;
+      margin-bottom: 22px;
+    }
+    .hero-buttons { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
+
+    /* Нижний «травяной» край hero */
+    .hero::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 24px;
+      background: repeating-linear-gradient(90deg, var(--accent-2) 0 32px, #16a34a 32px 64px);
+      border-top: 4px solid #052e16;
+      z-index: 3;
+    }
+
+    /* ============ БЛОК С IP ============ */
+    .ip-section { padding: 70px 0; background: var(--green-dark); }
+    .ip-box {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      background: var(--bg);
+      border: 4px solid var(--accent-2);
+      box-shadow: 8px 8px 0 #052e16;
+      padding: 36px 24px;
+    }
+    .ip-box p { color: var(--muted); margin-bottom: 14px; }
+    .ip-row { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+    .ip-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(.9rem, 3.5vw, 1.6rem);
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    /* ============ РЕЖИМЫ ============ */
+    .grid { display: grid; gap: 26px; }
+    .modes-grid { grid-template-columns: repeat(4, 1fr); }
+    .card {
+      background: var(--card);
+      border: 4px solid var(--green);
+      box-shadow: 6px 6px 0 #05120a;
+      padding: 28px 22px;
+      text-align: center;
+      transition: transform .2s, border-color .2s;
+    }
+    .card:hover { transform: translateY(-6px); border-color: var(--accent-2); }
+    .card i { font-size: 2.4rem; color: var(--accent); margin-bottom: 18px; }
+    .card h3 { font-size: .85rem; margin-bottom: 14px; color: #fff; }
+    .card p { color: var(--muted); font-size: .95rem; }
+
+    /* ============ ПОЧЕМУ МЫ ============ */
+    .why { background: linear-gradient(180deg, var(--bg), var(--green-dark)); }
+    .why-grid { grid-template-columns: repeat(4, 1fr); }
+    .why-item { text-align: center; padding: 10px; }
+    .why-icon {
+      width: 80px; height: 80px;
+      margin: 0 auto 18px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--green);
+      border: 4px solid var(--accent-2);
+      box-shadow: 5px 5px 0 #052e16;
+      font-size: 1.9rem;
+      color: var(--accent);
+    }
+    .why-item h3 { font-size: .8rem; margin-bottom: 10px; }
+    .why-item p { color: var(--muted); font-size: .95rem; }
+
+    /* ============ КАК НАЧАТЬ ============ */
+    .steps-grid { grid-template-columns: repeat(3, 1fr); }
+    .step {
+      position: relative;
+      background: var(--card);
+      border: 4px solid var(--green);
+      padding: 40px 24px 28px;
+      box-shadow: 6px 6px 0 #05120a;
+    }
+    .step-num {
+      position: absolute;
+      top: -22px; left: 20px;
+      background: var(--accent-2);
+      color: #052e16;
+      border: 4px solid #052e16;
+      font-family: 'Press Start 2P', monospace;
+      padding: 10px 14px;
+      font-size: 1rem;
+    }
+    .step h3 { font-size: .8rem; margin-bottom: 12px; color: var(--accent); }
+    .step p { color: var(--muted); }
+    .step code { background: #05120a; color: var(--accent); padding: 2px 6px; }
+
+    /* ============ СКРИНШОТЫ ============ */
+    .shots { background: var(--green-dark); }
+    .shots-grid { grid-template-columns: repeat(3, 1fr); }
+    .shot {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border: 4px solid var(--accent-2);
+      box-shadow: 6px 6px 0 #052e16;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: .7rem;
+      color: rgba(255,255,255,.85);
+      text-shadow: 2px 2px 0 rgba(0,0,0,.6);
+      transition: transform .3s;
+      z-index: 1;
+    }
+    .shot:hover { transform: scale(1.06); z-index: 5; }
+    /* ИЗМЕНИТЬ: замените background на url('ваш-скриншот.jpg') center/cover */
+    .shot:nth-child(1) { background: linear-gradient(135deg, #22c55e, #14532d); }
+    .shot:nth-child(2) { background: linear-gradient(135deg, #38bdf8, #1e3a8a); }
+    .shot:nth-child(3) { background: linear-gradient(135deg, #f59e0b, #7c2d12); }
+    .shot:nth-child(4) { background: linear-gradient(135deg, #a78bfa, #3b0764); }
+    .shot:nth-child(5) { background: linear-gradient(135deg, #f43f5e, #4c0519); }
+    .shot:nth-child(6) { background: linear-gradient(135deg, #2dd4bf, #134e4a); }
+
+    /* ============ ФУТЕР ============ */
+    footer {
+      background: #05120a;
+      border-top: 4px solid var(--accent-2);
+      padding: 40px 0;
+      text-align: center;
+    }
+    .socials { display: flex; justify-content: center; gap: 22px; margin-bottom: 20px; flex-wrap: wrap; }
+    .socials a {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--accent);
+      border: 3px solid var(--green);
+      padding: 10px 18px;
+      transition: background .2s;
+    }
+    .socials a:hover { background: var(--green); }
+    footer p { color: var(--muted); font-size: .9rem; }
+
+    /* ============ TOAST ============ */
+    #toast {
+      position: fixed;
+      left: 50%; bottom: 40px;
+      transform: translate(-50%, 120px);
+      background: var(--accent-2);
+      color: #052e16;
+      font-family: 'Press Start 2P', monospace;
+      font-size: .7rem;
+      padding: 16px 22px;
+      border: 4px solid #052e16;
+      box-shadow: 5px 5px 0 #052e16;
+      transition: transform .3s;
+      z-index: 1000;
+    }
+    #toast.show { transform: translate(-50%, 0); }
+
+    /* ============ АНИМАЦИЯ ПОЯВЛЕНИЯ ============ */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ============ АДАПТИВНОСТЬ ============ */
+    @media (max-width: 1024px) {
+      .modes-grid, .why-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      section { padding: 60px 0; }
+      .section-title { font-size: 1.1rem; }
+      .steps-grid { grid-template-columns: 1fr; gap: 40px; }
+      .shots-grid { grid-template-columns: repeat(2, 1fr); }
+      .btn { font-size: .7rem; padding: 14px 18px; }
+    }
+    @media (max-width: 480px) {
+      .modes-grid, .why-grid, .shots-grid { grid-template-columns: 1fr; }
+      .hero-buttons { flex-direction: column; align-items: stretch; }
+      .btn { justify-content: center; }
+      .ip-box { padding: 26px 14px; }
+      #toast { font-size: .6rem; width: 90%; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HERO-СЕКЦИЯ ===== -->
+  <header class="hero" id="top">
+    <div id="bg-layer" aria-hidden="true"></div>
+    <div class="container hero-content">
+      <!-- ИЗМЕНИТЬ: версия сервера -->
+      <span class="badge"><i class="fa-solid fa-cube"></i> Версия 1.20.4 — 1.21</span>
+      <!-- ИЗМЕНИТЬ: название сервера -->
+      <h1>CraftLand</h1>
+      <!-- ИЗМЕНИТЬ: краткое описание -->
+      <p class="subtitle">Лучший Minecraft-сервер с уникальными режимами, стабильным онлайном и дружным комьюнити. Заходи и строй свою историю!</p>
+      <div class="hero-buttons">
+        <button class="btn" id="play-btn"><i class="fa-solid fa-play"></i> Играть</button>
+        <!-- ИЗМЕНИТЬ: ссылка на Discord -->
+        <a class="btn btn-discord" href="https://discord.gg/yourlink" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Discord</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== БЛОК С IP ===== -->
+    <section class="ip-section" id="ip">
+      <div class="container reveal">
+        <div class="ip-box">
+          <p>IP-адрес сервера</p>
+          <div class="ip-row">
+            <!-- ИЗМЕНИТЬ: IP-адрес (также поменяйте в JS ниже, переменная SERVER_IP) -->
+            <span class="ip-text" id="ip-text">play.craftland.ru</span>
+            <button class="btn" id="copy-btn"><i class="fa-regular fa-copy"></i> Копировать</button>
+          </div>
+          <!-- ИЗМЕНИТЬ: дата открытия / вайпа (или удалите строку) -->
+          <p style="margin-top:18px;"><i class="fa-regular fa-calendar"></i> Ближайший вайп: 1 декабря 2026</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== РЕЖИМЫ ИГРЫ ===== -->
+    <section id="modes">
+      <div class="container">
+        <h2 class="section-title reveal">Режимы игры</h2>
+        <p class="section-sub reveal">Выбери то, что по душе</p>
+        <!-- ИЗМЕНИТЬ: карточки режимов (иконки — на fontawesome.com) -->
+        <div class="grid modes-grid">
+          <article class="card reveal">
+            <i class="fa-solid fa-tree"></i>
+            <h3>Выживание</h3>
+            <p>Классический режим: добывай ресурсы, стройся, торгуй и защищай свою территорию.</p>
+          </article>
+          <article class="card reveal">
+            <i class="fa-solid fa-skull-crossbones"></i>
+            <h3>Анархия</h3>
+            <p>Без правил и ограничений. Выживает сильнейший и самый хитрый.</p>
+          </article>
+          <article class="card reveal">
+            <i class="fa-solid fa-cloud"></i>
+            <h3>SkyBlock</h3>
+            <p>Начни на маленьком острове в небе и построй настоящую империю.</p>
+          </article>
+          <article class="card reveal">
+            <i class="fa-solid fa-gamepad"></i>
+            <h3>Mini-Games</h3>
+            <p>BedWars, SkyWars и другие мини-игры для весёлых боёв с друзьями.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ПОЧЕМУ МЫ ===== -->
+    <section class="why" id="why">
+      <div class="container">
+        <h2 class="section-title reveal">Почему мы</h2>
+        <p class="section-sub reveal">Четыре причины остаться с нами</p>
+        <!-- ИЗМЕНИТЬ: преимущества -->
+        <div class="grid why-grid">
+          <div class="why-item reveal">
+            <div class="why-icon"><i class="fa-solid fa-server"></i></div>
+            <h3>Стабильный онлайн</h3>
+            <p>Мощное железо и низкий пинг — никаких лагов и вылетов.</p>
+          </div>
+          <div class="why-item reveal">
+            <div class="why-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Защита от гриферов</h3>
+            <p>Приваты и античит надёжно защищают ваши постройки.</p>
+          </div>
+          <div class="why-item reveal">
+            <div class="why-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <h3>Кастомные механики</h3>
+            <p>Уникальные плагины, предметы и события, которых нет на других серверах.</p>
+          </div>
+          <div class="why-item reveal">
+            <div class="why-icon"><i class="fa-solid fa-user-shield"></i></div>
+            <h3>Активная администрация</h3>
+            <p>Быстро отвечаем на вопросы и решаем проблемы игроков.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== КАК НАЧАТЬ ИГРАТЬ ===== -->
+    <section id="start">
+      <div class="container">
+        <h2 class="section-title reveal">Как начать играть</h2>
+        <p class="section-sub reveal">Всего три простых шага</p>
+        <div class="grid steps-grid">
+          <div class="step reveal">
+            <span class="step-num">1</span>
+            <h3>Запусти Minecraft</h3>
+            <p>Скачай лаунчер и запусти Minecraft версии <code>1.20.4 — 1.21</code>.</p>
+          </div>
+          <div class="step reveal">
+            <span class="step-num">2</span>
+            <h3>Добавь сервер</h3>
+            <p>Нажми «Сетевая игра» → «Добавить сервер» и вставь IP: <code>play.craftland.ru</code></p>
+          </div>
+          <div class="step reveal">
+            <span class="step-num">3</span>
+            <h3>Заходи и играй</h3>
+            <p>Подключайся, регистрируйся командой в чате и наслаждайся игрой!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== СКРИНШОТЫ ===== -->
+    <section class="shots" id="screens">
+      <div class="container">
+        <h2 class="section-title reveal">Скриншоты</h2>
+        <p class="section-sub reveal">Загляни в наш мир</p>
+        <!-- ИЗМЕНИТЬ: замените градиенты на свои скриншоты в CSS (.shot:nth-child) -->
+        <div class="grid shots-grid">
+          <div class="shot reveal">Спавн</div>
+          <div class="shot reveal">Выживание</div>
+          <div class="shot reveal">SkyBlock</div>
+          <div class="shot reveal">Арена</div>
+          <div class="shot reveal">Города</div>
+          <div class="shot reveal">События</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== ФУТЕР ===== -->
+  <footer>
+    <div class="container">
+      <div class="socials">
+        <!-- ИЗМЕНИТЬ: ссылки на соцсети -->
+        <a href="https://discord.gg/yourlink" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Discord</a>
+        <a href="https://t.me/yourchannel" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i> Telegram</a>
+      </div>
+      <!-- ИЗМЕНИТЬ: копирайт -->
+      <p>&copy; 2026 CraftLand. Не является официальным продуктом Mojang / Microsoft.</p>
+    </div>
+  </footer>
+
+  <!-- Всплывающее уведомление -->
+  <div id="toast" role="status" aria-live="polite">IP скопирован!</div>
+
+  <script>
+    /* ИЗМЕНИТЬ: IP-адрес, который копируется в буфер обмена */
+    const SERVER_IP = 'play.craftland.ru';
+
+    /* ---------- Toast-уведомление ---------- */
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    /* ---------- Копирование IP (с фолбэком) ---------- */
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+
+    function copyIP() {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(SERVER_IP)
+          .then(() => showToast('IP скопирован!'))
+          .catch(() => showToast(fallbackCopy(SERVER_IP) ? 'IP скопирован!' : 'Не удалось скопировать'));
+      } else {
+        showToast(fallbackCopy(SERVER_IP) ? 'IP скопирован!' : 'Не удалось скопировать');
+      }
+    }
+
+    document.getElementById('play-btn').addEventListener('click', copyIP);
+    document.getElementById('copy-btn').addEventListener('click', copyIP);
+
+    /* ---------- Анимированный фон: звёзды и блоки ---------- */
+    const layer = document.getElementById('bg-layer');
+    const blockColors = ['#2d5a2d', '#4ade80', '#6b4423', '#475569', '#22c55e'];
+
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('span');
+      s.className = 'star';
+      const size = Math.random() < 0.8 ? 3 : 5;
+      s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*85}%;animation-delay:${Math.random()*3}s;`;
+      layer.appendChild(s);
+    }
+    for (let i = 0; i < 12; i++) {
+      const b = document.createElement('span');
+      b.className = 'block';
+      const size = 24 + Math.floor(Math.random() * 36);
+      b.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*95}%;top:${Math.random()*85}%;background:${blockColors[i % blockColors.length]};animation-duration:${6 + Math.random()*6}s;animation-delay:${Math.random()*4}s;`;
+      layer.appendChild(b);
+    }
+
+    /* Лёгкий параллакс от движения мыши */
+    const hero = document.querySelector('.hero');
+    hero.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+      layer.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    /* ---------- Плавный скролл по якорям ---------- */
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    /* ---------- Появление элементов при скролле ---------- */
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, idx) => {
+          if (entry.isIntersecting) {
+            entry.target.style.transitionDelay = (idx % 4) * 0.1 + 's';
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach(el => observer.observe(el));
+    } else {
+      revealEls.forEach(el => el.classList.add('visible'));
+    }
+  </script>
+</body>
+</html>
